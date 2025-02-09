@@ -28,7 +28,7 @@ main_url = "http://localhost:8001"
 async def register_user(user: UserCreate):
     async with httpx.AsyncClient() as client:
         
-        response = await client.post(f"{main_urll}/create_user", json=user.model_dump())
+        response = await client.post(f"{main_url}/create_user", json=user.model_dump())
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code, detail=response.json().get("detail"))
         return response.json()
@@ -41,7 +41,7 @@ async def login(userin :UserCreate):
      )
   async with httpx.AsyncClient() as client:
       username = userin.username
-      response = await client.get(f"{main_urll}/users_by_username/{username}")
+      response = await client.get(f"{main_url}/users_by_username/{username}")
       if response.status_code != 200:
           raise credentials_exception
       user = response.json()
