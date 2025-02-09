@@ -21,25 +21,14 @@ class Token(BaseModel):
    access_token: str
    token_type: str
 
-class TaskCreate(BaseModel):
-  title: str
-class TaskUpdate(BaseModel):
-  title: str
-  completed: bool
-class TaskBase(TaskCreate):
-   id: str
-   created_at: datetime
-   completed: bool
-class Task(TaskBase):
-  owner_id: str
-
 router = APIRouter()
-db_url = os.getenv("DB_URL", "http://localhost:8003")
-
+#db_url = os.getenv("DB_URL", "http://localhost:8003")
+main_url = "http://localhost:8001"
 @router.post("/users", response_model=UserResponse)
 async def register_user(user: UserCreate):
     async with httpx.AsyncClient() as client:
-        response = await client.post(f"{db_url}/users", json=user.model_dump())
+        
+        response = await client.post(f"{main_urll}/create_user", json=user.model_dump())
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code, detail=response.json().get("detail"))
         return response.json()
@@ -52,7 +41,7 @@ async def login(userin :UserCreate):
      )
   async with httpx.AsyncClient() as client:
       username = userin.username
-      response = await client.get(f"{db_url}/users_by_username/{username}")
+      response = await client.get(f"{main_urll}/users_by_username/{username}")
       if response.status_code != 200:
           raise credentials_exception
       user = response.json()
@@ -76,7 +65,7 @@ async def get_user(token: str):
    except JWTError:
       raise credentials_exception
    async with httpx.AsyncClient() as client:
-        response = await client.get(f"{db_url}/users_by_username/{username}")
+        response = await client.get(f"{main_url}/users_by_username/{username}")
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code, detail=response.json().get("detail"))
         return response.json()
